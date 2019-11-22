@@ -9,9 +9,9 @@ def selection(node, total, path):
     while node.child:
         ucb = None
         if len(path) % 2:
-            ucb = list(map(lambda c: 1 - c.succ / c.total + np.sqrt(2 * np.log(total) / c.total), node.child))
+            ucb = list(map(lambda c: 1 - c.succ / c.total + np.sqrt(1 * np.log(total) / c.total), node.child))
         else:
-            ucb = list(map(lambda c: c.succ / c.total + np.sqrt(2 * np.log(total) / c.total), node.child))
+            ucb = list(map(lambda c: c.succ / c.total + np.sqrt(1 * np.log(total) / c.total), node.child))
         node = node.child[choice(np.argwhere(ucb == max(ucb)))[0]]
         path.append(node)
     return node
@@ -47,7 +47,21 @@ def backdate(root, path, result):
         n.succ_fail(result)
 
 
-def mcts(board, iteration=2000):
+def intervene(root, board):
+    ucb = list(map(lambda c: c.succ / c.total + np.sqrt(1 * np.log(root.total) / c.total), root.child))
+    for i, u in enumerate(ucb):
+        root.child[i].ucb = u
+    root.child.sort(key=lambda u: u.ucb, reverse=True)
+    pos = root.child[np.argmax(ucb)].pos
+    possible_pos = board.has_danger()
+    if possible_pos:
+        possible_pos = [tuple(i) for i in possible_pos if tuple(i) in board.vacuity and 0 <= i[0] < board.size and 0 <= i[1] < board.size]
+        possible_pos = max(filter(lambda x: x.pos in possible_pos, root.child), key=lambda x: x.ucb, default=None)
+        if possible_pos: return possible_pos.pos
+    return pos
+
+
+def mcts(board, iteration=1000):
     root = Node()
     vacuity = board.vacuity  # 可选落子处
     for i in range(iteration):
@@ -62,10 +76,7 @@ def mcts(board, iteration=2000):
             node = expansion(node, vacuity, path)
             result = stimulation(node, deepcopy(board), path)
         backdate(root, path, result)
-    ucb = list(map(lambda c: c.succ / c.total + np.sqrt(2 * np.log(root.total) / c.total), root.child))
-    for i, u in enumerate(ucb):
-        root.child[i].ucb = u
-    pos = root.child[np.argmax(ucb)].pos
+    pos = intervene(root, board)
     board.move(pos, 1)
     print(f'=> The computer moves {pos}:\n{board.chess}')
     return pos
