@@ -78,6 +78,9 @@ class Game:
         c, d = [0, ratio] if x == 0 else [-ratio, 0] if x == self.column - 1 else [-ratio, ratio]
         self.c_chess.create_line(center_y + a * self.step, center_x, center_y + b * self.step, center_x)
         self.c_chess.create_line(center_y, center_x + c * self.step, center_y, center_x + d * self.step)
+        ### 调试需求
+        [self.c_chess.create_text(self.mesh * (i + 1), self.mesh * 0.8, text=f'{i}') for i in range(self.column)]
+        [self.c_chess.create_text(self.mesh * 0.8, self.mesh * (i + 1), text=f'{i}') for i in range(self.column)]
 
         # 有一些特殊的点要画小黑点
         if ((x == 3 or x == 11) and (y == 3 or y == 11)) or (x == 7 and y == 7):

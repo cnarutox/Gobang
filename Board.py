@@ -73,6 +73,7 @@ class Board:
                         if i - 1 >= 0 and seq[i - 1][0] == 0 and i + 1 < len(seq) and seq[i + 1][0] == 0: return x, y
         return None
 
+    # 放弃该函数
     def has_danger(self):
         seq = list(self.chess)
         seq.extend(self.chess.transpose())
