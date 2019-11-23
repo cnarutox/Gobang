@@ -9,9 +9,9 @@ def selection(node, total, path):
     while node.child:
         ucb = None
         if len(path) % 2:
-            ucb = list(map(lambda c: 1 - c.succ / c.total + np.sqrt(1 * np.log(total) / c.total), node.child))
+            ucb = list(map(lambda c: 1 - c.succ / c.total + 2 * np.sqrt(np.log(total) / c.total), node.child))
         else:
-            ucb = list(map(lambda c: c.succ / c.total + np.sqrt(1 * np.log(total) / c.total), node.child))
+            ucb = list(map(lambda c: c.succ / c.total + 2 * np.sqrt(np.log(total) / c.total), node.child))
         node = node.child[choice(np.argwhere(ucb == max(ucb)))[0]]
         path.append(node)
     return node
@@ -19,7 +19,6 @@ def selection(node, total, path):
 
 def expansion(node, vacuity, path):
     waiting = set(map(lambda v: tuple(v), vacuity)) - set(map(lambda p: tuple(p.pos), path + node.child))
-    # waiting = list(np.setdiff1d(vacuity, list(map(lambda p: p.pos, path + node.child))).reshape(-1, 2))
     if waiting:
         node.child.append(Node(choice(list(waiting))))
         path.append(node.child[-1])
@@ -38,7 +37,6 @@ def stimulation(node, board, path):
         board.move(pos, player)
         result = board.end(player)
         player *= -1
-    # print(f'=> The player {player * -1} moves {pos} and {result}:\n{board.chess}')
     return result
 
 
@@ -48,38 +46,40 @@ def backdate(root, path, result):
 
 
 def intervene(root, board):
-    ucb = list(map(lambda c: c.succ / c.total + np.sqrt(1 * np.log(root.total) / c.total), root.child))
+    pos = board.defend()
+    if pos:
+        print(f' defend ', end='')
+        return pos
+    ucb = list(map(lambda c: (c.succ / c.total + 2 * np.sqrt(np.log(root.total) / c.total), c.succ / c.total), root.child))
     for i, u in enumerate(ucb):
-        root.child[i].ucb = u
-    root.child.sort(key=lambda u: u.ucb, reverse=True)
+        root.child[i].ucb = u[0]
     pos = root.child[np.argmax(ucb)].pos
-    possible_pos = board.has_danger()
-    if possible_pos:
-        possible_pos = [tuple(i) for i in possible_pos if tuple(i) in board.vacuity and 0 <= i[0] < board.size and 0 <= i[1] < board.size]
-        possible_pos = max(filter(lambda x: x.pos in possible_pos, root.child), key=lambda x: x.ucb, default=None)
-        if possible_pos: return possible_pos.pos
+    # possible_pos = [tuple(i) for i in board.has_danger() if tuple(i) in board.vacuity and (0, ) * 2 <= i < (board.size, ) * 2]
+    # if possible_pos:
+    #     print(f'possible_pos: {possible_pos}')
+    #     possible_pos = max(filter(lambda x: x.pos in possible_pos, root.child), key=lambda x: x.ucb, default=Node(possible_pos[0]))
+    #     return possible_pos.pos
     return pos
 
 
-def mcts(board, iteration=1000):
+def mcts(game, queue, iteration=500):
     root = Node()
+    board = game.board
     vacuity = board.vacuity  # 可选落子处
     for i in range(iteration):
         path = []  # 截止到当前节点的搜索路径
         node = root
         if len(path) + len(node.child) >= len(vacuity):
             node = selection(node, root.total, path)
-        # 判断胜负
         player = -1 if len(path) % 2 else 1
+        # 判断胜负
         result = board.end(-(-1 if len(path) % 2 else 1))
         if result == 0:
             node = expansion(node, vacuity, path)
             result = stimulation(node, deepcopy(board), path)
         backdate(root, path, result)
     pos = intervene(root, board)
-    board.move(pos, 1)
-    print(f'=> The computer moves {pos}:\n{board.chess}')
-    return pos
+    queue.put(pos)
 
 
 if __name__ == "__main__":
