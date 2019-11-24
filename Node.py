@@ -2,7 +2,7 @@ import numpy as np
 
 
 class Node:
-    # node类初始化
+    # node类初始化ƒ
     def __init__(self, pos=None):
         self.succ = 0
         self.total = 0
@@ -15,24 +15,11 @@ class Node:
             self.succ += 1
         self.total += 1
 
-    def __truediv__(self, value):
-        pass
-
     def __repr__(self):
         return f'{self.pos}=>{self.succ}/{self.total}={self.ucb}'
 
     def __eq__(self, node):
         return self.pos == node.pos
 
-    # 重写__eq__后必须重写__hash__
     def __hash__(self):
         return id(self)
-
-    # def __lt__(self, node):
-    #     pass
-
-    # def __le__(self, node):
-    #     if self < node or self == node:
-    #         return True
-    #     else:
-    #         return False

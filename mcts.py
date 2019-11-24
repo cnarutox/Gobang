@@ -1,8 +1,10 @@
-import numpy as np
 from copy import deepcopy
+from random import choice, randint, shuffle
+
+import numpy as np
+
 from Board import Board
 from Node import Node
-from random import choice, randint, shuffle
 
 
 def selection(node, total, path):
@@ -48,17 +50,13 @@ def backdate(root, path, result):
 def intervene(root, board):
     pos = board.defend()
     if pos:
-        print(f' defend ', end='')
+        print(f' defend', end='')
         return pos
-    ucb = list(map(lambda c: (c.succ / c.total + 2 * np.sqrt(np.log(root.total) / c.total), c.succ / c.total), root.child))
+    ucb = list(
+        map(lambda c: (c.succ / c.total + 2 * np.sqrt(np.log(root.total) / c.total), c.succ / c.total), root.child))
     for i, u in enumerate(ucb):
         root.child[i].ucb = u[0]
     pos = root.child[np.argmax(ucb)].pos
-    # possible_pos = [tuple(i) for i in board.has_danger() if tuple(i) in board.vacuity and (0, ) * 2 <= i < (board.size, ) * 2]
-    # if possible_pos:
-    #     print(f'possible_pos: {possible_pos}')
-    #     possible_pos = max(filter(lambda x: x.pos in possible_pos, root.child), key=lambda x: x.ucb, default=Node(possible_pos[0]))
-    #     return possible_pos.pos
     return pos
 
 
