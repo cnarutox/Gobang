@@ -197,7 +197,7 @@ class Game:
         self.info.config(text="白方下棋" + next(self.points), fg='#ffffee')
         print(f'=> 白方:', end='')
         self.queue.put(self.board)
-        Process(target=mcts, args=(self.queue, 200)).start()
+        Process(target=mcts, args=(self.queue, 150)).start()
         self.tk.after(1000, self.waiting)
 
     def player_win(self, x, y, tag):
