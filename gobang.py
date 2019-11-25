@@ -1,3 +1,4 @@
+from itertools import cycle
 from multiprocessing import Process, Queue
 from tkinter import (BOTH, DISABLED, LEFT, NORMAL, RIGHT, YES, Button, Canvas, Frame, Label, Text, Tk)
 from tkinter.messagebox import showinfo
@@ -168,7 +169,8 @@ class Game:
             self.info.config(text="黑方下棋", fg='#444444')
             self.previous.append(pos)
             return
-        self.tk.after(100, self.waiting)
+        self.info.config(text="白方下棋" + next(self.points), fg='#ffffee')
+        self.tk.after(1000, self.waiting)
 
     def click(self, e):
         if self.player != -1: return
@@ -191,10 +193,11 @@ class Game:
             self.set_state("init")
             self.info.config(text="Well done! You win", fg='yellow')
             return
-        self.info.config(text="白方下棋", fg='#ffffee')
+        self.points = cycle(['.' * i for i in range(7)])
+        self.info.config(text="白方下棋" + next(self.points), fg='#ffffee')
         print(f'=> 白方:', end='')
         Process(target=mcts, args=(self, self.queue, 200)).start()
-        self.tk.after(100, self.waiting)
+        self.tk.after(1000, self.waiting)
 
     def player_win(self, x, y, tag):
         four_direction = [[self.board.chess[i][y] for i in range(self.size)]]
