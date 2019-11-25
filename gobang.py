@@ -156,9 +156,9 @@ class Game:
         self.info.config(text="The player gives up!", fg='red')
 
     def waiting(self):
-        if not self.previous and not self.queue.empty():
+        if not self.previous:
             print('\r')
-            self.queue.get()
+            self.queue = Queue()
             return
         elif not self.queue.empty():
             pos = self.queue.get()
