@@ -30,7 +30,7 @@ class Game:
         self.queue = Queue()
         self.board_color = "#FAD76E"
         self.func_bg = "#F0C896"
-        self.font = ("Times New Roman", 25, "normal")
+        self.font = ("Times New Roman", 20, "normal")
         # This is resposible for the GUI, so you do not need
         # to care more about this because they are mostly
         # formulated code
@@ -44,9 +44,9 @@ class Game:
         self.func_start = Button(self.tk_header, text="Start", command=self.start, font=self.font)
         self.func_restart = Button(self.tk_header, text="Restart", command=self.restart, state=DISABLED, font=self.font)
         self.info = Label(self.tk_header,
-                          text="Waiting to start...",
+                          text="Starting",
                           bg=self.func_bg,
-                          font=("Times New Roman", 25, "normal"),
+                          font=("Times New Roman", 20, "normal"),
                           fg="grey")
         self.func_regret = Button(self.tk_header, text="Regret", command=self.regret, state=DISABLED, font=self.font)
         self.func_giveup = Button(self.tk_header, text="GiveUp", command=self.giveup, state=DISABLED, font=self.font)
