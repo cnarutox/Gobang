@@ -60,9 +60,9 @@ def intervene(root, board):
     return pos
 
 
-def mcts(game, queue, iteration=500):
+def mcts(queue, iteration=500):
     root = Node()
-    board = game.board
+    board = queue.get()
     vacuity = board.vacuity  # 可选落子处
     for i in range(iteration):
         path = []  # 截止到当前节点的搜索路径
