@@ -3,6 +3,8 @@
 > Lanuage: Python
 > Platform: MacOS, Windows, Linux
 
+![img](screen.png)
+
 <span id = "gobang"></span>
 
 #### [gobang.py](#gobang.py)
