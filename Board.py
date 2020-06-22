@@ -5,7 +5,7 @@ import numpy as np
 
 
 class Board:
-    def __init__(self, size=11):
+    def __init__(self, size=9):
         self.size = size
         self.chess = np.zeros((size, size), int)
         print(f'==> Board initializing:\n{self.chess}')
@@ -59,6 +59,9 @@ class Board:
                     if v[1] == 4 and seq.count((-1, 4)) != org_seq.count((-1, 4)):
                         if i - 1 >= 0 and seq[i - 1][0] == 0 and i + 1 < len(seq) and seq[i + 1][0] == 0: return x, y
         return None
+
+    def get_vacuity(self):
+        return self.vacuity
 
 
 if __name__ == "__main__":

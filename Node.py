@@ -15,6 +15,12 @@ class Node:
             self.succ += 1
         self.total += 1
 
+    def add(self, *node):
+        for i in node:
+            self.succ += i.succ
+            self.total += i.total
+        return self
+
     def __repr__(self):
         return f'{self.pos}=>{self.succ}/{self.total}={self.ucb}'
 
